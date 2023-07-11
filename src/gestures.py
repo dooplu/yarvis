@@ -3,6 +3,7 @@ import mouse
 import cv2 as cv
 import numpy as np
 import time
+import utilities
 
 model_path = 'models/hand_landmarker.task'
 
@@ -27,6 +28,8 @@ with HandLandmarker.create_from_options(options) as landmarker:
     start = time.time()
     x = 0
     y = 0
+    mouse_x = 0
+    mouse_y = 0
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -40,12 +43,16 @@ with HandLandmarker.create_from_options(options) as landmarker:
         hand_landmarker_result = landmarker.detect_for_video(frame, timestamp)
         
         try:
-            x = hand_landmarker_result.hand_landmarks[0][8].x
-            y = hand_landmarker_result.hand_landmarks[0][8].y
+            x = hand_landmarker_result.hand_landmarks[0][8].x * 1920
+            y = hand_landmarker_result.hand_landmarks[0][8].y * 1080
+            z = hand_landmarker_result.hand_landmarks[0][8].z 
+            
         except IndexError:
             pass
         
-        mouse.move(x * 1920, y * 1080, True)
+        mouse_x = utilities.lerp(mouse_x, x, 0.7)
+        mouse_y = utilities.lerp(mouse_y, y, 0.7)
+        mouse.move(mouse_x, mouse_y, True)
         cv.imshow('frame', frame.numpy_view())
 
         if cv.waitKey(1) == ord('q'):
