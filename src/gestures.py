@@ -1,7 +1,6 @@
 import mediapipe as mp
 import mouse
 import cv2 as cv
-import numpy as np
 import time
 import utilities
 
@@ -45,7 +44,9 @@ with HandLandmarker.create_from_options(options) as landmarker:
         try:
             x = hand_landmarker_result.hand_landmarks[0][8].x * 1920
             y = hand_landmarker_result.hand_landmarks[0][8].y * 1080
-            z = hand_landmarker_result.hand_landmarks[0][8].z 
+            z = hand_landmarker_result.hand_landmarks[0][8].z * -1
+            if z > 0.09: mouse.press()
+            else: mouse.release()
             
         except IndexError:
             pass
@@ -53,12 +54,10 @@ with HandLandmarker.create_from_options(options) as landmarker:
         mouse_x = utilities.lerp(mouse_x, x, 0.7)
         mouse_y = utilities.lerp(mouse_y, y, 0.7)
         mouse.move(mouse_x, mouse_y, True)
-        cv.imshow('frame', frame.numpy_view())
+        #cv.imshow('frame', frame.numpy_view())
 
         if cv.waitKey(1) == ord('q'):
             break
-
-
 
 cap.release()
 cv.destroyAllWindows()
