@@ -45,19 +45,17 @@ with HandLandmarker.create_from_options(options) as landmarker:
             x = hand_landmarker_result.hand_landmarks[0][8].x * 1920
             y = hand_landmarker_result.hand_landmarks[0][8].y * 1080
             z = hand_landmarker_result.hand_landmarks[0][8].z * -1
-            if z > 0.09: mouse.press()
-            else: mouse.release()
-            
-        except IndexError:
-            pass
-        
-        mouse_x = utilities.lerp(mouse_x, x, 0.7)
-        mouse_y = utilities.lerp(mouse_y, y, 0.7)
-        mouse.move(mouse_x, mouse_y, True)
-        #cv.imshow('frame', frame.numpy_view())
 
-        if cv.waitKey(1) == ord('q'):
-            break
+            mouse_x = utilities.lerp(mouse_x, x, 0.8)
+            mouse_y = utilities.lerp(mouse_y, y, 0.8)
+            mouse.move(mouse_x, mouse_y, True)
+
+            #if z > 0.09: mouse.press()
+            #else: mouse.release()  
+        except IndexError: # no hands seen
+            pass
+    
+        #cv.imshow('frame', frame.numpy_view())
 
 cap.release()
 cv.destroyAllWindows()
