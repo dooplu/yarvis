@@ -24,7 +24,8 @@ options = HandLandmarkerOptions(
     num_hands=2)
 with HandLandmarker.create_from_options(options) as landmarker:
     # The landmarker is initialized. Use it here.
-    start = time.time()
+    start = time.time_ns()
+    old_time = 0
     x = 0
     y = 0
     mouse_x = 0
@@ -38,7 +39,7 @@ with HandLandmarker.create_from_options(options) as landmarker:
             continue
         cv.flip(frame, 1, frame)
         frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-        timestamp = int((time.time() - start) * 1000)
+        timestamp = int((time.time_ns() - start) / 1000000.0)
         hand_landmarker_result = landmarker.detect_for_video(frame, timestamp)
         
         try:
@@ -54,8 +55,8 @@ with HandLandmarker.create_from_options(options) as landmarker:
             #else: mouse.release()  
         except IndexError: # no hands seen
             pass
-    
-        #cv.imshow('frame', frame.numpy_view())
+        fps = int(pow((timestamp-old_time)/1000.0, -1))
+        print(fps)
+        old_time = timestamp
 
 cap.release()
-cv.destroyAllWindows()
