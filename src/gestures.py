@@ -56,7 +56,7 @@ with HandLandmarker.create_from_options(options) as landmarker:
         except IndexError: # no hands seen
             pass
         fps = int(pow((timestamp-old_time)/1000.0, -1))
-        print(fps)
+        print("fps: ", fps, end="\r")
         old_time = timestamp
 
 cap.release()
