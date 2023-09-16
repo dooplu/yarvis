@@ -12,7 +12,7 @@ BaseOptions = mp.tasks.BaseOptions(model_asset_path=model_path)
 HandLandmarker = mp.tasks.vision.HandLandmarker
 HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1)
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
@@ -33,6 +33,7 @@ with HandLandmarker.create_from_options(options) as landmarker:
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
+        image = frame
         # if frame is read correctly ret is True
         if not ret:
             print("couldnt receive frame")
@@ -41,7 +42,6 @@ with HandLandmarker.create_from_options(options) as landmarker:
         frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
         timestamp = int((time.time_ns() - start) / 1000000.0)
         hand_landmarker_result = landmarker.detect_for_video(frame, timestamp)
-        
         try:
             x = hand_landmarker_result.hand_landmarks[0][8].x * 1920
             y = hand_landmarker_result.hand_landmarks[0][8].y * 1080
@@ -49,7 +49,8 @@ with HandLandmarker.create_from_options(options) as landmarker:
 
             mouse_x = utilities.lerp(mouse_x, x, 0.8)
             mouse_y = utilities.lerp(mouse_y, y, 0.8)
-            mouse.move(mouse_x, mouse_y, True)
+            mouse.move(1920 - mouse_x, mouse_y + 1080, True)
+            print(mouse_x, mouse_y)
 
             #if z > 0.09: mouse.press()
             #else: mouse.release()  
@@ -58,5 +59,7 @@ with HandLandmarker.create_from_options(options) as landmarker:
         fps = int(pow((timestamp-old_time)/1000.0, -1))
         print("fps: ", fps, end="\r")
         old_time = timestamp
+        cv.imshow('oog', image)
+        if cv.waitKey(1) == ord('q'): break
 
 cap.release()

@@ -1,7 +1,7 @@
 import cv2 as cv
 import time
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1)
 
 while True:
     ret, frame = cap.read()
